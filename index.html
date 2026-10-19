@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>羽绒服穿搭指南</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow-x:hidden;-webkit-user-select:none;user-select:none}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:linear-gradient(180deg,#f8f9fa,#e9ecef);color:#2c3e50;min-height:100vh;min-height:100dvh;padding-bottom:env(safe-area-inset-bottom,20px)}
+.container{max-width:480px;margin:0 auto;padding:24px 20px calc(24px + env(safe-area-inset-bottom));display:flex;flex-direction:column;min-height:100vh;min-height:100dvh}
+h1{text-align:center;font-size:24px;font-weight:700;margin-bottom:8px;color:#1a1a1a}
+.subtitle{text-align:center;font-size:14px;color:#888;margin-bottom:28px}
+.menu{display:flex;flex-direction:column;gap:14px;flex:1}
+.menu button{background:#fff;border:1px solid #e8e8e8;border-radius:16px;padding:18px 20px;font-size:17px;font-weight:500;color:#333;cursor:pointer;min-height:56px;box-shadow:0 2px 12px rgba(0,0,0,.06);transition:all .15s ease;-webkit-appearance:none;appearance:none;position:relative;overflow:hidden;text-align:left}
+.menu button:active{transform:scale(.97);background:#f0f0f0}
+.menu button::after{content:"›";position:absolute;right:20px;top:50%;transform:translateY(-50%);font-size:22px;color:#bbb}
+.image-box{display:none;flex-direction:column;align-items:center;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.image-wrapper{position:relative;width:100%;max-width:400px;border-radius:16px;overflow:hidden;background:#f0f0f0;margin-bottom:16px;box-shadow:0 4px 20px rgba(0,0,0,.1)}
+.image-wrapper img{width:100%;display:block;transition:opacity .3s}
+.img-placeholder{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#999;font-size:14px}
+.img-placeholder.hidden{display:none}
+.outfit-tag{position:absolute;bottom:12px;left:12px;right:12px;background:rgba(0,0,0,.6);color:#fff;padding:10px 14px;border-radius:10px;font-size:14px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.back-btn{background:#2c3e50;color:#fff;border:none;border-radius:14px;padding:16px 32px;font-size:16px;font-weight:500;cursor:pointer;min-height:50px;box-shadow:0 4px 14px rgba(44,62,80,.3);transition:all .15s ease;-webkit-appearance:none}
+.back-btn:active{transform:scale(.96);opacity:.9}
+.img-counter{text-align:center;font-size:13px;color:#999;margin-bottom:12px}
+.swipe-hint{text-align:center;font-size:12px;color:#aaa;margin-top:8px;opacity:0;transition:opacity .3s}
+.swipe-hint.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>🧥 羽绒服穿搭指南</h1>
+<p class="subtitle">为30-50岁男士精选 · 点击选择风格</p>
+
+<div id="homeMenu" class="menu">
+<button onclick="showOptions('casual')">休闲日常</button>
+<button onclick="showOptions('city')">城市通勤</button>
+<button onclick="showOptions('outdoor')">户外机能</button>
+</div>
+
+<div id="optionMenu" class="menu" style="display:none"></div>
+
+<div id="imageBox" class="image-box">
+<div class="image-wrapper" id="swipeArea">
+<div class="img-placeholder" id="placeholder">加载中...</div>
+<img id="outfitImg" src="" alt="穿搭" onload="hidePlaceholder()" onerror="imgError()">
+<div class="outfit-tag" id="outfitTag"></div>
+</div>
+<div class="img-counter" id="imgCounter"></div>
+<button class="back-btn" onclick="backToOptions()">← 返回选项</button>
+<p class="swipe-hint" id="swipeHint">← 左右滑动切换图片 →</p>
+</div>
+</div>
+
+<script>
+const data={
+casual:{title:"休闲日常",options:{"短款羽绒服 + 高领毛衣":["https://hunyuan-prod-1258344703.cos.ap-guangzhou.myqcloud.com/text2img/189bd69aef9ea3630dd0fa51e14d72ec/20261011102331_h1_r6tM_bcfc29092e61f19ea0764f4b3314100f?q-sign-algorithm=sha1&q-ak=AKIDRl074nOsGdJ9zjMsCRWP3ShmgS3VtX4S&q-sign-time=1791685411;1823221411&q-key-time=1791685411;1823221411&q-header-list=host&q-url-param-list=&q-signature=4e1b1d6755b2173727f76e2ab867c85fc82aae55","https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=600&q=80"],"长款羽绒服 + 休闲西裤":["https://hunyuan-prod-1258344703.cos.ap-guangzhou.myqcloud.com/text2img/189bd69aef9ea3630dd0fa51e14d72ec/20261011102331_h1_M4pU_329ffd4f3f17730b389076c5bdbfc8f5?q-sign-algorithm=sha1&q-ak=AKIDRl074nOsGdJ9zjMsCRWP3ShmgS3VtX4S&q-sign-time=1791685411;1823221411&q-key-time=1791685411;1823221411&q-header-list=host&q-url-param-list=&q-signature=77f7a638a0e5bb36d308d16b2332d5b2b3696645","https://images.unsplash.com/photo-1516257984-b1b4a525fe14?w=600&q=80"]}},
+city:{title:"城市通勤",options:{"修身羽绒服 + 羊毛西裤":["https://hunyuan-prod-1258344703.cos.ap-guangzhou.myqcloud.com/text2img/189bd69aef9ea3630dd0fa51e14d72ec/20261011102331_h1_gOGB_adc9955a8f099aa46ca68c086f710564?q-sign-algorithm=sha1&q-ak=AKIDRl074nOsGdJ9zjMsCRWP3ShmgS3VtX4S&q-sign-time=1791685411;1823221411&q-key-time=1791685411;1823221411&q-header-list=host&q-url-param-list=&q-signature=24d2fcf4170427d39d14a1e275d03435e5a7c15c","https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80"],"轻薄羽绒服 + 大衣叠穿":["https://hunyuan-prod-1258344703.cos.ap-guangzhou.myqcloud.com/text2img/189bd69aef9ea3630dd0fa51e14d72ec/20261011102331_h1_0fd5_03e02e280d65056104cb90c3162d5e1d?q-sign-algorithm=sha1&q-ak=AKIDRl074nOsGdJ9zjMsCRWP3ShmgS3VtX4S&q-sign-time=1791685411;1823221411&q-key-time=1791685411;1823221411&q-header-list=host&q-url-param-list=&q-signature=c05b4111613c31bbca3648dc1413d3ae82dbce65","https://images.unsplash.com/photo-1487222477894-8943e31ef7b2?w=600&q=80"]}},
+outdoor:{title:"户外机能",options:{"滑雪羽绒服 + 冲锋裤":["https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=600&q=80","https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=600&q=80"],"工装羽绒服 + 登山靴":["https://images.unsplash.com/photo-1542838686-5a5c0b7c4c8e?w=600&q=80","https://images.unsplash.com/photo-1519689680058-324335c6c6d0?w=600&q=80"]}}
+};
+
+const homeMenu=document.getElementById("homeMenu"),optionMenu=document.getElementById("optionMenu"),imageBox=document.getElementById("imageBox"),outfitImg=document.getElementById("outfitImg"),placeholder=document.getElementById("placeholder"),outfitTag=document.getElementById("outfitTag"),imgCounter=document.getElementById("imgCounter"),swipeHint=document.getElementById("swipeHint");
+let currentImages=[],currentIndex=0,startX=0,currentOptionName="";
+
+function showOptions(t){homeMenu.style.display="none";optionMenu.style.display="flex";imageBox.style.display="none";optionMenu.innerHTML="";Object.keys(data[t].options).forEach(o=>{const b=document.createElement("button");b.textContent=o;b.onclick=()=>showImage(t,o);optionMenu.appendChild(b)});const back=document.createElement("button");back.textContent="← 返回首页";back.style.background="#f8f9fa";back.style.color="#666";back.onclick=backToHome;optionMenu.appendChild(back)}
+
+function showImage(t,o){currentOptionName=o;currentImages=data[t].options[o];currentIndex=0;optionMenu.style.display="none";imageBox.style.display="flex";placeholder.classList.remove("hidden");placeholder.textContent="加载中...";outfitTag.textContent=o;updateCounter();loadImage(currentImages[currentIndex]);currentImages.length>1?swipeHint.classList.add("show"):swipeHint.classList.remove("show")}
+
+function loadImage(u){outfitImg.style.opacity="0";outfitImg.src=u}
+function hidePlaceholder(){placeholder.classList.add("hidden");outfitImg.style.opacity="1";updateCounter()}
+function imgError(){placeholder.textContent="图片加载失败";placeholder.classList.remove("hidden")}
+function updateCounter(){imgCounter.textContent=currentImages.length>1?`${currentIndex+1} / ${currentImages.length}`:""}
+function backToOptions(){imageBox.style.display="none";optionMenu.style.display="flex";outfitImg.src=""}
+function backToHome(){optionMenu.style.display="none";homeMenu.style.display="flex"}
+
+const swipeArea=document.getElementById("swipeArea");
+swipeArea.addEventListener("touchstart",e=>{startX=e.touches[0].clientX});
+swipeArea.addEventListener("touchend",e=>{if(currentImages.length<=1)return;const diff=startX-e.changedTouches[0].clientX;if(Math.abs(diff)>50){if(diff>0)currentIndex=(currentIndex+1)%currentImages.length;else currentIndex=(currentIndex-1+currentImages.length)%currentImages.length;placeholder.classList.remove("hidden");placeholder.textContent="加载中...";loadImage(currentImages[currentIndex])}});
+</script>
+</body>
+</html>
